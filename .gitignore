@@ -1,0 +1,37 @@
+
+# Ignore Rust target directory (compiled binaries)
+target/
+
+# Ignore build artifacts from Cargo
+**/Cargo.lock
+**/Cargo.toml.orig
+
+# Ignore Rust intermediate files
+*.rmeta
+*.rs.bk
+
+# Ignore dependency and build caches
+/.cargo/
+.cargo/
+
+# Ignore editor-specific files
+.idea/
+.vscode/
+*.iml
+
+# Ignore logs, dumps, and temp files
+*.log
+*.out
+*.tmp
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore debug output
+debug/
+trace.log
+
+# Ignore Docker-related files (if using Docker)
+docker-compose.override.yml
+.env
