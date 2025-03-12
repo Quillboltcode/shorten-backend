@@ -1,0 +1,85 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: shortener_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d shortener_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    restart: always
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: password
+    ports:
+      - "5672:5672"
+      - "15672:15672" # Management UI
+    healthcheck:
+      test: ["CMD","rabbitmq","status"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  redis:
+    image: redis:7
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  shortener-service:
+    build:
+      context: ./shortener-service
+      dockerfile: Dockerfile
+    container_name: shortener-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://user:password@postgres:5432/shortener_db
+      RABBITMQ_URL: amqp://user:password@rabbitmq:5672
+    ports:
+      - "8080:8080"
+
+  redirect-service:
+    build:
+      context: ./redirect-service
+      dockerfile: Dockerfile
+    container_name: redirect-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+    environment:
+      DATABASE_URL: postgres://user:password@postgres:5432/shortener_db
+      RABBITMQ_URL: amqp://user:password@rabbitmq:5672
+      REDIS_URL: redis://redis:6379
+    ports:
+      - "8081:8081"
+
+volumes:
+  postgres_data:
