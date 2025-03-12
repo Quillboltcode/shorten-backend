@@ -3,7 +3,6 @@
 target/
 
 # Ignore build artifacts from Cargo
-**/Cargo.lock
 **/Cargo.toml.orig
 
 # Ignore Rust intermediate files
