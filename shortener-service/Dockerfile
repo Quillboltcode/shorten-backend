@@ -6,12 +6,16 @@ RUN apt-get update && apt-get install -y libpq-dev pkg-config openssl libssl-dev
 
 # Set work directory
 WORKDIR /app
+# Copy the common module and the shortener service
+ADD common /app/common
+COPY shortener-service /app/shortener-service
 
-# Copy the project files
-COPY Cargo.toml Cargo.lock ./
-COPY src ./src
 
-# Build the application in release mode
+
+# Build the application
+WORKDIR /app/shortener-service
+COPY shortener-service/Cargo.toml  /app/shortener-service
+COPY shortener-service/Cargo.lock  /app/shortener-service
 RUN cargo build --release
 
 
@@ -25,7 +29,7 @@ RUN apt-get update && apt-get install -y libpq5 && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 
 # Copy the built binary from the builder stage
-COPY --from=builder /app/target/release/shortener-service /app/shortener-service
+COPY --from=builder /app/shortener-service/target/release/shortener-service /app/shortener-service
 
 # Expose port
 EXPOSE 8080

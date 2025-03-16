@@ -1,20 +1,31 @@
 use std::env;
-use lapin::{options::*, types::FieldTable, Connection, ConnectionProperties, Consumer};
+use lapin::{options::*, types::FieldTable, Consumer};
 use redis::AsyncCommands;
 use futures_util::StreamExt;
+use common::rabbitmq::connect_to_rabbitmq;
+use tracing::info;
+
 pub async fn listen_for_updates(redis: redis::Client) {
     let rabbitmq_url = env::var("RABBITMQ_URL").expect("RABBITMQ_URL must be set");
     
-    let conn = Connection::connect(&rabbitmq_url, ConnectionProperties::default())
-        .await
-        .expect("Failed to connect to RabbitMQ");
+    let conn= connect_to_rabbitmq(&rabbitmq_url).await;
     
     let channel = conn.create_channel().await.expect("Failed to create channel");
-
-    let _queue = channel
-        .queue_declare("url_queue", QueueDeclareOptions::default(), FieldTable::default())
-        .await
-        .expect("Failed to declare queue");
+    // ✅ Declare the queue before publishing
+    channel
+            .queue_declare(
+                "url_queue",
+                QueueDeclareOptions {
+                    passive: false,      // The queue must exist
+                    durable: true,       // The queue will persist across RabbitMQ restarts
+                    auto_delete: false,  // The queue is not deleted when no consumers exist
+                    exclusive: false,    // Allow multiple consumers
+                    nowait: false,
+                },
+                FieldTable::default(),
+            )
+            .await.unwrap();
+    info!("✅ Queue declared: url_queue");
 
     let consumer: Consumer = channel
         .basic_consume("url_queue", "consumer", BasicConsumeOptions::default(), FieldTable::default())

@@ -1,0 +1,15 @@
+# Ignore compiled output
+target/
+
+# Ignore Rust dependencies
+
+
+# Ignore Git-related files
+.git
+.gitignore
+
+# Ignore editor and OS files
+*.swp
+*.swo
+*.swn
+.DS_Store

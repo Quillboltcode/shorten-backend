@@ -14,3 +14,8 @@ Import into local PostgreSQL:
 ```sh
 psql -U <your_local_db_user> -d <your_local_db_name> -f db_backup.sql
 ```
+
+## Command to rebuild and watch
+```sh
+docker compose up -d --no-deps shortener-service
+```

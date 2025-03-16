@@ -1,17 +1,17 @@
 use std::sync::Arc;
 use axum::{routing::get, Router};
 use tokio::net::TcpListener;
+use common::db::{init_pool,DbPool};
 
 mod rabbitmq;
 mod routes;
 mod cache;
-mod db;
 mod models;
 mod schema;
 
 #[derive(Clone)]
 struct AppState {
-    db_pool: db::DbPool,
+    db_pool: DbPool,
     cache: Arc<cache::RedisCache>,
 }
 
@@ -22,7 +22,7 @@ async fn main() {
     let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
     let _rabbitmq_url = std::env::var("RABBITMQ_URL").expect("RABBITMQ_URL must be set");
 
-    let db_pool = db::init_pool(&database_url);
+    let db_pool = init_pool(&database_url);
     let cache = Arc::new(cache::RedisCache::new(&redis_url).await.unwrap());
 
     let redis_client = redis::Client::open(redis_url).expect("Failed to connect to Redis");

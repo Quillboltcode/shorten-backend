@@ -47,8 +47,8 @@ services:
 
   shortener-service:
     build:
-      context: ./shortener-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: shortener-service/Dockerfile
     container_name: shortener-service
     depends_on:
       postgres:
@@ -58,13 +58,16 @@ services:
     environment:
       DATABASE_URL: postgres://user:password@postgres:5432/shortener_db
       RABBITMQ_URL: amqp://user:password@rabbitmq:5672
+      JWT_SECRET: super_secret_key
     ports:
       - "8080:8080"
+    volumes:
+      - ./common:/app/common
 
   redirect-service:
     build:
-      context: ./redirect-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: redirect-service/Dockerfile
     container_name: redirect-service
     depends_on:
       postgres:
@@ -80,6 +83,7 @@ services:
       REDIS_URL: redis://redis:6379
     ports:
       - "8081:8081"
-
+    volumes:
+    - ./common:/app/common
 volumes:
   postgres_data:
