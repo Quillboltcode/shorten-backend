@@ -1,7 +1,7 @@
 use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
 use chrono::NaiveDateTime;
-use crate::schema::{url_mapping, account};
+use crate::schema::url_mapping;
 
 
 #[derive(Queryable, Insertable, Serialize, Deserialize, Debug)]

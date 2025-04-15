@@ -13,7 +13,6 @@ mod models;
 mod routes;
 mod schema;
 mod rabbitmq;
-mod migration;
 mod hashcode;
 
 
@@ -33,10 +32,8 @@ async fn main() {
     let db_pool = init_pool(&database_url);
 
     let state = Arc::new(db_pool);
-    migration::seed_data(&mut conn);
     let app = Router::new()
         .route("/shorten", post(routes::urlshort::shorten_url))
-        .nest("/auth",routes::auth::auth_routes())
         .layer(
             TraceLayer::new_for_http()
             .make_span_with(DefaultMakeSpan::new().level(Level::INFO))

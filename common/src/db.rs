@@ -12,15 +12,6 @@ pub fn init_pool(url:&str) -> DbPool {
 }
 
 pub fn run_migrations(conn: &mut PgConnection) {
-    let create_user_table_sql = r#"
-        CREATE TABLE IF NOT EXISTS account  (
-            user_id SERIAL PRIMARY KEY,
-            name VARCHAR NULL,
-            email VARCHAR UNIQUE NOT NULL,
-            password_hash VARCHAR NOT NULL
-        );
-    "#;
-
     let create_url_mapping_table_sql = r#"
         CREATE TABLE IF NOT EXISTS url_mapping (
             short_url VARCHAR(10) PRIMARY KEY,
@@ -30,13 +21,10 @@ pub fn run_migrations(conn: &mut PgConnection) {
             expiration_date TIMESTAMP NULL,
             user_id INT NULL,
             click_count INT DEFAULT 0,
-            FOREIGN KEY (user_id) REFERENCES account(user_id) ON DELETE SET NULL
         );
     "#;
 
-    sql_query(create_user_table_sql)
-        .execute(conn)
-        .expect("Failed to create account table");
+
 
     sql_query(create_url_mapping_table_sql)
         .execute(conn)

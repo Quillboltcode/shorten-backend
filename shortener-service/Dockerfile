@@ -10,8 +10,6 @@ WORKDIR /app
 ADD common /app/common
 COPY shortener-service /app/shortener-service
 
-
-
 # Build the application
 WORKDIR /app/shortener-service
 COPY shortener-service/Cargo.toml  /app/shortener-service

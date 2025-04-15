@@ -11,6 +11,8 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U user -d shortener_db"]
       interval: 10s
@@ -27,6 +29,8 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672" # Management UI
+    networks:
+      - app-network
     healthcheck:
       test: ["CMD","rabbitmq","status"]
       interval: 10s
@@ -39,6 +43,8 @@ services:
     restart: always
     ports:
       - "6379:6379"
+    networks:
+      - app-network
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -58,7 +64,8 @@ services:
     environment:
       DATABASE_URL: postgres://user:password@postgres:5432/shortener_db
       RABBITMQ_URL: amqp://user:password@rabbitmq:5672
-      JWT_SECRET: super_secret_key
+    networks:
+      - app-network
     ports:
       - "8080:8080"
     volumes:
@@ -81,9 +88,47 @@ services:
       DATABASE_URL: postgres://user:password@postgres:5432/shortener_db
       RABBITMQ_URL: amqp://user:password@rabbitmq:5672
       REDIS_URL: redis://redis:6379
+    networks:
+      - app-network
     ports:
       - "8081:8081"
     volumes:
     - ./common:/app/common
+  
+  user-service:
+    build:
+      context: .
+      dockerfile: UserService/Dockerfile
+    container_name: user-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://user:password@postgres:5432/shortener_db
+      RABBITMQ_URL: amqp://user:password@rabbitmq:5672
+    networks:
+      - app-network
+    ports:
+      - "8082:8082"
+
+  api-gateway:
+    build:
+      context: .
+      dockerfile: api-gateway/Dockerfile
+    ports:
+      - "8500:8500"
+    environment:
+      - JWT_SECRET=your_secret_key_here
+    depends_on:
+      - shortener-service
+      - redirect-service
+    networks:
+      - app-network
+    
 volumes:
   postgres_data:
+networks:
+  app-network:
+    driver: bridge

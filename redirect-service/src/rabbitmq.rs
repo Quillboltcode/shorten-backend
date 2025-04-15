@@ -33,7 +33,7 @@ pub async fn listen_for_updates(redis: redis::Client) {
         .expect("Failed to create consumer");
 
     println!("Listening for messages on RabbitMQ queue: url_queue");
-
+    // Start a separate task to process messages
     tokio::spawn(async move {
         let mut conn = redis.get_multiplexed_async_connection().await.expect("Failed to connect to Redis");
 

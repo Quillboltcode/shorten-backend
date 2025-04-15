@@ -1,4 +1,4 @@
-use lapin::{options::*, types::FieldTable, BasicProperties};
+use lapin::{options::*, BasicProperties};
 use tracing::info;
 use common::rabbitmq::connect_to_rabbitmq;
 
