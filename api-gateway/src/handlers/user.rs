@@ -9,7 +9,7 @@ use std::sync::Arc;
 
 use crate::app_state::AppState;
 use crate::auth::validate_token;
-use crate::models::{ApiResponse, ChangePasswordRequest, UpdateUserRequest, UserRegistrationRequest, UserResponse};
+use crate::models::{ApiResponse, ChangePasswordRequest, UpdateUserRequest, UserRegistrationRequest};
 use crate::helpers::convert_axum_to_reqwest_headers;
 
 // User registration endpoint

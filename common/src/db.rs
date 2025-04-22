@@ -16,11 +16,11 @@ pub fn run_migrations(conn: &mut PgConnection) {
         CREATE TABLE IF NOT EXISTS url_mapping (
             short_url VARCHAR(10) PRIMARY KEY,
             alias VARCHAR(255) UNIQUE NULL,
-            long_url VARCHAR NOT NULL,
+            long_url VARCHAR(1000) NOT NULL,
             creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             expiration_date TIMESTAMP NULL,
             user_id INT NULL,
-            click_count INT DEFAULT 0,
+            click_count INT DEFAULT 0
         );
     "#;
 

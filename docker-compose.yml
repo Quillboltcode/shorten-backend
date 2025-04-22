@@ -114,18 +114,32 @@ services:
       - "8082:8082"
 
   api-gateway:
-    build:
-      context: .
-      dockerfile: api-gateway/Dockerfile
-    ports:
+      build:
+        context: .
+        dockerfile: api-gateway/Dockerfile.dev # Use a separate Dockerfile for development
+      volumes:
+        - ./api-gateway:/app/api-gateway # Mount the source code as a volume
+      environment:
+        - RUST_LOG=debug
+      ports:
       - "8500:8500"
-    environment:
-      - JWT_SECRET=your_secret_key_here
-    depends_on:
-      - shortener-service
-      - redirect-service
-    networks:
-      - app-network
+      depends_on:
+        - shortener-service
+        - redirect-service
+      tty: true # Keep the container running for interactive use
+      stdin_open: true # Enable interactive input
+    # build:
+    #   context: .
+    #   dockerfile: api-gateway/Dockerfile
+    # ports:
+    #   - "8500:8500"
+    # environment:
+    #   - JWT_SECRET=your_secret_key_here
+    # depends_on:
+    #   - shortener-service
+    #   - redirect-service
+    # networks:
+    #   - app-network
     
 volumes:
   postgres_data:

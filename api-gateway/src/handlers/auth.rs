@@ -9,7 +9,7 @@ use std::sync::Arc;
 
 use crate::app_state::AppState;
 use crate::models::{
-    ApiResponse, LoginRequest, LoginResponse, RefreshTokenRequest,
+    ApiResponse, LoginRequest, RefreshTokenRequest,
     ValidateTokenRequest, ValidateTokenResponse,
 };
 

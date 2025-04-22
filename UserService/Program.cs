@@ -75,6 +75,17 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+// Add CORS policy to allow all origins
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin() // Allow requests from any origin
+              .AllowAnyHeader()  // Allow any headers
+              .AllowAnyMethod(); // Allow any HTTP methods
+    });
+});
+
 // Build the application
 var app = builder.Build();
 app.Urls.Add("http://*:8082");
@@ -95,7 +106,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+// Use CORS policy
+app.UseCors("AllowAll");
 // Add authentication and authorization to the middleware pipeline
 app.UseAuthentication();
 app.UseAuthorization();
