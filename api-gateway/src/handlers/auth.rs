@@ -13,6 +13,10 @@ use crate::models::{
     ValidateTokenRequest, ValidateTokenResponse,
 };
 
+//     POST /auth/login (Login and Generate Token)
+//     POST /auth/logout (Logout and Invalidate Token)
+//     POST /auth/validate-token (Validate Token)
+
 // Login endpoint
 #[utoipa::path(
     post,

@@ -30,7 +30,7 @@ WORKDIR /app
 COPY --from=builder /app/shortener-service/target/release/shortener-service /app/shortener-service
 
 # Expose port
-EXPOSE 8080
+EXPOSE 8082
 
 # Command to run the service
 CMD ["/app/shortener-service"]

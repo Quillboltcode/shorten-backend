@@ -88,7 +88,7 @@ builder.Services.AddCors(options =>
 
 // Build the application
 var app = builder.Build();
-app.Urls.Add("http://*:8082");
+
 
 var logger = app.Services.GetRequiredService<ILogger<Program>>();
 logger.LogInformation("Application started");
@@ -102,10 +102,10 @@ using (var scope = app.Services.CreateScope())
 
 // Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+
+app.UseSwagger();
+app.UseSwaggerUI();
+
 // Use CORS policy
 app.UseCors("AllowAll");
 // Add authentication and authorization to the middleware pipeline

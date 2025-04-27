@@ -10,7 +10,9 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace UserService.Controllers;
 
-// Endpoints:   POST /users (Register User)
+// Endpoints:
+///    GET  /users (Get All Users) 
+//     POST /users (Register User)
 //     POST /auth/login (Login and Generate Token)
 //     POST /auth/logout (Logout and Invalidate Token)
 //     POST /auth/validate-token (Validate Token)
@@ -36,7 +38,7 @@ public class UserController : ControllerBase
 
     // ✅ GET all users
     [HttpGet]
-    [Authorize]
+    // [Authorize]
     public async Task<ActionResult<IEnumerable<User>>> GetUsers()
     {
         _logger.LogInformation("Fetching all users.");

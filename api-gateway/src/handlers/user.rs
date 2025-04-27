@@ -12,6 +12,65 @@ use crate::auth::validate_token;
 use crate::models::{ApiResponse, ChangePasswordRequest, UpdateUserRequest, UserRegistrationRequest};
 use crate::helpers::convert_axum_to_reqwest_headers;
 
+// Endpoints from user-service:
+///    GET  /users (Get All Users) 
+//     POST /users (Register User)
+//     GET /users/{userId} (Get User Profile)
+//     PUT /users/{userId} (Update User Profile)
+//     PUT /users/{userId}/password (Change User Password)
+//     DELETE /users/{userId} (Delete User Account)
+
+// Get Alll Users endpoint
+#[utoipa::path(
+    get,
+    path = "/users",
+    tag = "api-gateway",
+    responses(
+        (status = 200, description = "Users retrieved successfully", body = [UserResponse]),
+        (status = 500, description = "Internal server error")
+    )
+)]
+pub async fn get_all_users(
+    State(state): State<Arc<AppState>>,
+    // headers: HeaderMap,
+) -> impl IntoResponse {
+    // Forward get all users request to user service
+    match state
+        .user_service_client
+        .get(format!("{}/users", state.user_service_url))
+        // .headers(headers)
+        .send()
+        .await
+    {
+        Ok(response) => {
+            let status = response.status();
+            match response.json::<serde_json::Value>().await {
+                Ok(data) => (
+                    StatusCode::from_u16(status.as_u16()).unwrap_or(StatusCode::INTERNAL_SERVER_ERROR),
+                    Json(data),
+                ),
+                Err(_) => (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(serde_json::json!({
+                        "success": false,
+                        "message": "Failed to parse user service response"
+                    })),
+                ),
+            }
+        }
+        Err(_) => (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(serde_json::json!({
+                "success": false,
+                "message": "Failed to connect to user service"
+            })),
+        ),
+    }
+}
+
+
+
+
 // User registration endpoint
 #[utoipa::path(
     post,

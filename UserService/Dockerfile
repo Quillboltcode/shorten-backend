@@ -24,7 +24,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 
 # Set working directory inside the runtime container
 WORKDIR /app
-
+ENV ASPNETCORE_URLS=http://+:8082
 # Copy built application from the build stage
 COPY --from=build /publish .
 

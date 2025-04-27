@@ -32,10 +32,12 @@ async fn main() {
     
     // Configure routes
     let app = Router::new()
+        // Core funtional proxied 
         .route("/health", get(handlers::health))
         .route("/shorten", post(handlers::shorten_url))
         .route("/r/:shortcode", get(handlers::redirect_url))
         // User service proxied endpoints
+        .route("/users", get(handlers::get_user))
         .route("/users", post(handlers::register_user))
         .route("/users/:user_id", get(handlers::get_user))
         .route("/users/:user_id", put(handlers::update_user))
