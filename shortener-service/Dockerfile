@@ -12,8 +12,8 @@ COPY shortener-service /app/shortener-service
 
 # Build the application
 WORKDIR /app/shortener-service
-COPY shortener-service/Cargo.toml  /app/shortener-service
-COPY shortener-service/Cargo.lock  /app/shortener-service
+# COPY shortener-service/Cargo.toml  /app/shortener-service
+# COPY shortener-service/Cargo.lock  /app/shortener-service
 RUN cargo build --release
 
 

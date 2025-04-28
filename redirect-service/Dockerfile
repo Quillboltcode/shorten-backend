@@ -15,6 +15,7 @@ COPY redirect-service /app/redirect-service
 WORKDIR /app/redirect-service
 COPY redirect-service/Cargo.toml  /app/redirect-service
 COPY redirect-service/Cargo.lock  /app/redirect-service
+RUN cargo check
 RUN cargo build --release
 
 # Use a minimal runtime image

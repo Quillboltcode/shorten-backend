@@ -12,14 +12,14 @@ use crate::schema::url_mapping::dsl::*;
 use common::db::DbPool;
 
 #[derive(Deserialize)]
-struct QueryParams {
+pub struct QueryParams {
     user_id: i32,
 }
 
 #[derive(Serialize)]
 pub struct UrlInfoResponse {
     pub short_code: String,
-    pub short_url: String,
+    pub format_short_url: String,
     pub long_url: String,
     pub alias: Option<String>,
     pub creation_date: DateTime<Utc>,
@@ -30,11 +30,11 @@ pub struct UrlInfoResponse {
 impl From<UrlMappingModel> for UrlInfoResponse {
     fn from(mapping: UrlMappingModel) -> Self {
         let short_code = mapping.short_url.clone();
-        let short_url = format!("http://localhost:8080/{}", short_code);
+        let format_short_url = format!("http://localhost:8080/{}", short_code);
 
         UrlInfoResponse {
             short_code,
-            short_url ,
+            format_short_url,  
             long_url: mapping.long_url,
             alias: mapping.alias,
             creation_date: DateTime::<Utc>::from_naive_utc_and_offset(mapping.creation_date, Utc),

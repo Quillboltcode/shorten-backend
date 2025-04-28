@@ -12,10 +12,7 @@ RUN dotnet restore
 # Copy only the UserService files (not the entire solution)
 COPY UserService/ ./
 
-# OPTIONAL: install dotnet-ef CLI to generate migrations
-# RUN dotnet tool install --global dotnet-ef && \
-#     export PATH="$PATH:/root/.dotnet/tools" && \
-#     dotnet ef migrations add InitialCreate --context UserDbContext --output-dir Data/Migrations || echo "Migration already exists"
+
 # Build the application
 RUN dotnet publish -c Release -o /publish
 

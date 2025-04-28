@@ -33,7 +33,8 @@ async fn main() {
 
     let state = Arc::new(db_pool);
     let app = Router::new()
-        .route("/lookup", post(routes::lookup::get_urls_by_user_id))
+        .route("/lookup/user/", post(routes::lookup::get_urls_by_user_id))
+    
         .route("/shorten", post(routes::urlshort::shorten_url))
         .layer(
             TraceLayer::new_for_http()
