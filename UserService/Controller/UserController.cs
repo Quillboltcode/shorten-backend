@@ -213,29 +213,36 @@ public class UserController : ControllerBase
 
     private string GenerateJwtToken(User user)
     {
+        // Retrieve JWT settings from the configuration
         var jwtSettings = _configuration.GetSection("JwtSettings");
         var secretKey = jwtSettings["SecretKey"] ?? throw new InvalidOperationException("JWT Secret Key is not configured");
         var issuer = jwtSettings["Issuer"] ?? "userservice";
         var audience = jwtSettings["Audience"] ?? "userservice_clients";
         var expiryMinutes = int.Parse(jwtSettings["ExpiryMinutes"] ?? "60");
-        
+
+        // Create a security key using the secret key from the settings
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
+        
+        // Create signing credentials using the security key and a hashing algorithm
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
+        // Define claims to be included in the JWT token
         var claims = new[]
         {
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Name, user.Username)
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()), // User ID claim
+            new Claim(ClaimTypes.Name, user.Username) // Username claim
         };
 
+        // Create a new JWT token using the specified parameters
         var token = new JwtSecurityToken(
-            issuer: issuer,
-            audience: audience,
-            claims: claims,
-            expires: DateTime.Now.AddMinutes(expiryMinutes),
-            signingCredentials: credentials
+            issuer: issuer, // Token issuer
+            audience: audience, // Token audience
+            claims: claims, // Claims for the token
+            expires: DateTime.Now.AddMinutes(expiryMinutes), // Expiration time
+            signingCredentials: credentials // Signing credentials
         );
 
+        // Write the token to a string and return it
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 }

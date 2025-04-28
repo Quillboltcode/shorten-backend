@@ -131,7 +131,7 @@ pub async fn register_user(
         ("user_id" = String, Path, description = "User ID")
     ),
     responses(
-        (status = 200, description = "User information", body = UserResponse),
+        (status = 200, description = "User information with short URLs", body = UserResponse),
         (status = 401, description = "Unauthorized"),
         (status = 404, description = "User not found"),
         (status = 500, description = "Internal server error")
@@ -144,7 +144,7 @@ pub async fn get_user(
     State(state): State<Arc<AppState>>,
     headers: HeaderMap,
     Path(user_id): Path<String>,
-)-> impl IntoResponse {
+) -> impl IntoResponse {
     // Validate token using the user service
     if let Err(err) = validate_token(&headers, &state, "access").await {
         return (
@@ -156,40 +156,93 @@ pub async fn get_user(
         );
     }
 
-    // Forward request to user service
-    match state
-        .user_service_client
-        .get(format!("{}/users/{}", state.user_service_url, user_id))
-        .headers(
-            convert_axum_to_reqwest_headers(&headers)
-        )
-        .send()
-        .await
-    {
+    // Concurrently fetch user data and short URLs
+    let user_service_url = format!("{}/users/{}", state.user_service_url, user_id);
+    let shortener_service_url = format!("http://shortener-service:8080/lookup/{}", user_id);
+
+    let user_service_client = &state.user_service_client;
+    let shortener_service_client = &state.shortener_client;
+
+    // Concurrent Requests execute multiple asynchronous tasks
+    let (user_response, shortener_response) = tokio::join!(
+        // Request to user service
+        user_service_client
+            .get(&user_service_url)
+            .headers(convert_axum_to_reqwest_headers(&headers))
+            .send(),
+        // Request to shortener service
+        shortener_service_client
+            .get(&shortener_service_url)
+            .headers(convert_axum_to_reqwest_headers(&headers))
+            .send()
+    );
+
+    // Process user service response
+    let user_data = match user_response {
         Ok(response) => {
             let status = response.status();
             match response.json::<serde_json::Value>().await {
-                Ok(data) => (
-                    StatusCode::from_u16(status.as_u16()).unwrap_or(StatusCode::INTERNAL_SERVER_ERROR),
-                    Json(data),
-                ),
-                Err(_) => (
-                    StatusCode::INTERNAL_SERVER_ERROR,
-                    Json(serde_json::json!({
-                        "success": false,
-                        "message": "Failed to parse user service response"
-                    })),
-                ),
+                Ok(data) => (StatusCode::from_u16(status.as_u16()).unwrap_or(StatusCode::INTERNAL_SERVER_ERROR), data),
+                Err(_) => {
+                    return (
+                        StatusCode::INTERNAL_SERVER_ERROR,
+                        Json(serde_json::json!({
+                            "success": false,
+                            "message": "Failed to parse user service response"
+                        })),
+                    );
+                }
             }
         }
-        Err(_) => (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(serde_json::json!({
-                "success": false,
-                "message": "Failed to connect to user service"
-            })),
-        ),
-    }
+        Err(_) => {
+            return (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(serde_json::json!({
+                    "success": false,
+                    "message": "Failed to connect to user service"
+                })),
+            );
+        }
+    };
+
+    // Process shortener service response
+    let short_urls = match shortener_response {
+        Ok(response) => {
+            let status = response.status();
+            match response.json::<serde_json::Value>().await {
+                Ok(data) => (StatusCode::from_u16(status.as_u16()).unwrap_or(StatusCode::INTERNAL_SERVER_ERROR), data),
+                Err(_) => {
+                    return (
+                        StatusCode::INTERNAL_SERVER_ERROR,
+                        Json(serde_json::json!({
+                            "success": false,
+                            "message": "Failed to parse shortener service response"
+                        })),
+                    );
+                }
+            }
+        }
+        Err(_) => {
+            return (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(serde_json::json!({
+                    "success": false,
+                    "message": "Failed to connect to shortener service"
+                })),
+            );
+        }
+    };
+
+    // Combine user data and short URLs into a single response
+    let combined_response = serde_json::json!({
+        "user": user_data.1,
+        "short_urls": short_urls.1,
+    });
+
+    (
+        StatusCode::OK,
+        Json(combined_response),
+    )
 }
 
 // Update user endpoint

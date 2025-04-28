@@ -23,6 +23,15 @@ impl TokenCache {
     }
 
     // Store token info in cache
+    //
+    // This function takes a token, a user's ID, and a UTC timestamp representing
+    // when the token expires. It stores this information in the cache, marking
+    // the token as valid.
+    //
+    // This is used to reduce calls to the user service for validation. Tokens
+    // are stored in the cache for a short period of time, so that if the same
+    // token is provided again, we can quickly look up the associated user ID
+    // and check if the token is still valid.
     pub fn store_token(&self, token: &str, user_id: String, expires_at: DateTime<Utc>) {
         let mut cache = self.cache.write().unwrap();
         cache.insert(token.to_string(), TokenInfo {

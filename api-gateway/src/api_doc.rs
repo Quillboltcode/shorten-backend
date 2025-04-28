@@ -12,6 +12,7 @@ use crate::models::{
         crate::handlers::health::health,
         crate::handlers::shortener::shorten_url,
         crate::handlers::redirect::redirect_url,
+        crate::handlers::user::get_all_users,
         crate::handlers::user::register_user,
         crate::handlers::user::get_user,
         crate::handlers::user::update_user,

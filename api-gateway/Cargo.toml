@@ -23,3 +23,4 @@ tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 jsonwebtoken = "8.3"
 chrono = "0.4"
+lru = "0.14.0"

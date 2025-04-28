@@ -31,7 +31,7 @@ pub async fn redirect_url(
     // Forward request to redirect service
     match state
         .redirect_client
-        .get(format!("http://redirect-service:8081/api/redirect/{}", shortcode))
+        .get(format!("http://redirect-service:8081/{}", shortcode))
         .send()
         .await
     {

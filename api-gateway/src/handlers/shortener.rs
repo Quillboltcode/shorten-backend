@@ -46,7 +46,7 @@ pub async fn shorten_url(
     // Forward request to shortener service
     match state
         .shortener_client
-        .post("http://shortener-service:8080/api/shorten")
+        .post("http://shortener-service:8080/shorten")
         .json(&request)
         .send()
         .await
