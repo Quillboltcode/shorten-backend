@@ -28,20 +28,10 @@ use crate::models::{ApiResponse, ShortenRequest, ShortenResponse};
 )]
 pub async fn shorten_url(
     State(state): State<Arc<AppState>>,
-    headers: HeaderMap,
     Json(request): Json<ShortenRequest>,
 ) -> impl IntoResponse {
     // Validate token using the user service
-    if let Err(err) = validate_token(&headers, &state, "access").await {
-        return (
-            StatusCode::UNAUTHORIZED,
-            Json(ApiResponse::<ShortenResponse> {
-                success: false,
-                data: None,
-                message: Some(err),
-            }),
-        );
-    }
+
 
     // Forward request to shortener service
     match state
