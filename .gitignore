@@ -34,3 +34,7 @@ trace.log
 # Ignore Docker-related files (if using Docker)
 docker-compose.override.yml
 .env
+
+# Ignore ultility script
+delete_expired.sql
+delete_expired.sh
