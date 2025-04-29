@@ -3,24 +3,29 @@ use utoipa::ToSchema;
 
 #[derive(Serialize, Deserialize, ToSchema)]
 pub struct ShortenRequest {
-    pub url: String,
+    pub long_url: String,
 }
 
 #[derive(Serialize, Deserialize, ToSchema)]
 pub struct ShortenResponse {
-    pub shortcode: String,
+    pub short_code: String,
+    pub short_url: String,
+    pub expiration_time: String,
+    pub created_at: String,
 }
 
 #[derive(Serialize, Deserialize, ToSchema)]
 pub struct RedirectResponse {
-    pub original_url: String,
+    pub short_url: String,
+    pub alias: Option<String>,
+    pub long_url: String,
 }
 
 // User related models
 #[derive(Serialize, Deserialize, ToSchema)]
 pub struct UserRegistrationRequest {
-    pub email: String,
     pub username: String,
+    pub email: String,
     pub password: String,
 }
 

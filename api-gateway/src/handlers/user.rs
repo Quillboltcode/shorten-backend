@@ -12,7 +12,7 @@ use crate::auth::validate_token;
 use crate::models::{ApiResponse, ChangePasswordRequest, UpdateUserRequest, UserRegistrationRequest};
 use crate::helpers::convert_axum_to_reqwest_headers;
 
-// Endpoints from user-service:
+// Endpoints from user-service:(add{url}/api)
 ///    GET  /users (Get All Users) 
 //     POST /users (Register User)
 //     GET /users/{userId} (Get User Profile)

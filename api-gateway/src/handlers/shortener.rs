@@ -1,14 +1,13 @@
 // handlers/shortener.rs
 use axum::{
     extract::State,
-    http::{HeaderMap, StatusCode},
+    http::StatusCode,
     response::IntoResponse,
     Json,
 };
 use std::sync::Arc;
 
 use crate::app_state::AppState;
-use crate::auth::validate_token;
 use crate::models::{ApiResponse, ShortenRequest, ShortenResponse};
 
 // Shortener service endpoint

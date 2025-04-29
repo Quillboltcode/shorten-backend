@@ -19,7 +19,7 @@ impl AppState {
             user_service_client: Client::new(),
             jwt_secret: std::env::var("JWT_SECRET").unwrap_or_else(|_| "super_secret_key".to_string()),
             token_cache: Arc::new(TokenCache::new()),
-            user_service_url: std::env::var("USER_SERVICE_URL").unwrap_or_else(|_| "http://user-service:8082".to_string()),
+            user_service_url: std::env::var("USER_SERVICE_URL").unwrap_or_else(|_| "http://user-service:8082/api".to_string()),
         }
     }
 }

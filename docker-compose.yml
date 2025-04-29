@@ -32,7 +32,7 @@ services:
     networks:
       - app-network
     healthcheck:
-      test: ["CMD","rabbitmq","status"]
+      test: ["CMD","rabbitmq","status"] # rabbitmq-diagnostics -q ping
       interval: 10s
       timeout: 5s
       retries: 3
@@ -122,26 +122,14 @@ services:
         - ./api-gateway:/app/api-gateway # Mount the source code as a volume
       environment:
         - RUST_LOG=debug
+        - RUST_BACKTRACE=1
+        - USER_SERVICE_URL=http://user-service:8082/api
       ports:
       - "8500:8500"
-      depends_on:
-        - shortener-service
-        - redirect-service
-        - user-service
       tty: true # Keep the container running for interactive use
       stdin_open: true # Enable interactive input
-    # build:
-    #   context: .
-    #   dockerfile: api-gateway/Dockerfile
-    # ports:
-    #   - "8500:8500"
-    # environment:
-    #   - JWT_SECRET=your_secret_key_here
-    # depends_on:
-    #   - shortener-service
-    #   - redirect-service
-    # networks:
-    #   - app-network
+      networks:
+        - app-network
     
 volumes:
   postgres_data:
