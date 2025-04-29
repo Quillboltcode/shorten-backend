@@ -13,9 +13,9 @@ namespace UserService.Controllers;
 // Endpoints:
 ///    GET  /users (Get All Users) 
 //     POST /users (Register User)
-//     POST /auth/login (Login and Generate Token)
-//     POST /auth/logout (Logout and Invalidate Token)
-//     POST /auth/validate-token (Validate Token)
+//     POST /users/login (Login and Generate Token)
+//     POST /users/logout (Logout and Invalidate Token)
+//     POST /users/validate-token (Validate Token)
 //     GET /users/{userId} (Get User Profile)
 //     PUT /users/{userId} (Update User Profile)
 //     PUT /users/{userId}/password (Change User Password)

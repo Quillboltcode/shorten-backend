@@ -36,7 +36,7 @@ pub async fn login(
     // Forward login request to user service
     match state
         .user_service_client
-        .post(format!("{}/auth/login", state.user_service_url))
+        .post(format!("{}/users/login", state.user_service_url))
         .json(&request)
         .send()
         .await
@@ -84,7 +84,7 @@ pub async fn login(
 // Logout endpoint
 #[utoipa::path(
     post,
-    path = "/auth/logout",
+    path = "/users/logout",
     tag = "api-gateway",
     responses(
         (status = 200, description = "Logout successful"),
@@ -183,7 +183,7 @@ pub async fn logout(
 // Refresh token endpoint
 #[utoipa::path(
     post,
-    path = "/auth/refresh",
+    path = "/users/refresh",
     tag = "api-gateway",
     request_body = RefreshTokenRequest,
     responses(
@@ -199,7 +199,7 @@ pub async fn refresh_token(
     // Forward refresh token request to user service
     match state
         .user_service_client
-        .post(format!("{}/auth/refresh", state.user_service_url))
+        .post(format!("{}/users/refresh", state.user_service_url))
         .json(&request)
         .send()
         .await
@@ -279,7 +279,7 @@ pub async fn validate_token(
     // Token not in cache, forward validation request to user service
     match state
         .user_service_client
-        .post(format!("{}/auth/validate-token", state.user_service_url))
+        .post(format!("{}/users/validate-token", state.user_service_url))
         .json(&request)
         .send()
         .await
